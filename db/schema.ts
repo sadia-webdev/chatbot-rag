@@ -32,9 +32,13 @@ export const account = pgTable("account", {
   id: text("id").primaryKey(),
   accountId: text("account_id").notNull(),
   providerId: text("provider_id").notNull(),
+
+  issuer: text("issuer"),
+
   userId: text("user_id")
     .notNull()
     .references(() => user.id, { onDelete: "cascade" }),
+
   accessToken: text("access_token"),
   refreshToken: text("refresh_token"),
   idToken: text("id_token"),
@@ -42,9 +46,11 @@ export const account = pgTable("account", {
   refreshTokenExpiresAt: timestamp("refresh_token_expires_at"),
   scope: text("scope"),
   password: text("password"),
+
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at")
-    .$onUpdate(() => /* @__PURE__ */ new Date())
+    .defaultNow()
+    .$onUpdate(() => new Date())
     .notNull(),
 });
 
@@ -57,6 +63,24 @@ export const verification = pgTable("verification", {
   updatedAt: timestamp("updated_at")
     .defaultNow()
     .$onUpdate(() => /* @__PURE__ */ new Date())
+    .notNull(),
+});
+
+export const business = pgTable("business", {
+  id: text("id").primaryKey(),
+  name: text("name").notNull(),
+  description: text("description"),
+  phone: text("phone"),
+  email: text("email"),
+  userId: text("user_id")
+  .notNull()
+    .unique()
+    .references(() => user.id, { onDelete: "cascade" }),
+
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at")
+    .defaultNow()
+    .$onUpdate(() => new Date())
     .notNull(),
 });
 
@@ -80,7 +104,7 @@ export const message = pgTable("message", {
   conversationId: text("conversation_id")
     .notNull()
     .references(() => conversation.id, { onDelete: "cascade" }),
-  userId: text("text")
+  userId: text("user_id")
     .notNull()
     .references(() => user.id, { onDelete: "cascade" }),
   createdAt: timestamp("created_at").defaultNow().notNull(),
@@ -90,4 +114,12 @@ export const message = pgTable("message", {
     .notNull(),
 });
 
-export const schema = { user, session, account, verification };
+export const schema = {
+  user,
+  session,
+  account,
+  verification,
+  business,
+  conversation,
+  message,
+};
