@@ -12,7 +12,7 @@ const Page = () => {
   console.log(messages);
 
   return (
-    <div className=' bg-gray-800 flex min-h-screen p-12'>
+    <div className=' flex min-h-screen p-12'>
       <div className='container  mx-auto  flex flex-col'>
         {/* messages  */}
 
@@ -51,7 +51,7 @@ const Page = () => {
             value={input}
             onChange={(e) => setInput(e.target.value)}
           />
-          <Button type='submit' className='py-6 px-6 cursor-pointer '>
+          <Button type='submit' className='py-6 px-6 cursor-pointer bg-accent hover:bg-accent/80'>
             send
           </Button>
         </form>
