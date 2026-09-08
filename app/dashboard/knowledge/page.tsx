@@ -1,5 +1,4 @@
 import { BookOpen, FileText, Upload } from "lucide-react";
-
 import {
   Card,
   CardContent,
@@ -25,16 +24,13 @@ export default function KnowledgePage() {
           </p>
         </div>
 
-        <Button className='bg-accent hover:bg-accent/80'>
-          <Upload className='mr-2 size-4' />
-          Upload document
-        </Button>
+       
       </div>
 
       {/* Empty state */}
       <form action={uploadDocument}>
         <Card className='border-dashed'>
-          <CardContent className='flex min-h-[420px] flex-col items-center justify-center text-center'>
+          <CardContent className='flex min-h-105 flex-col items-center justify-center text-center'>
             <div className='mb-5 flex size-14 items-center justify-center rounded-xl bg-muted'>
               <BookOpen className='size-7 text-muted-foreground' />
             </div>

@@ -7,7 +7,7 @@ import { auth } from "@/lib/auth";
 import { index } from "../../../lib/pinecone";
 import { eq } from "drizzle-orm";
 import { db } from "@/db/drizzle";
-import { business } from "@/db/schema";
+import { business, document } from "@/db/schema";
 
 
 export async function uploadDocument(formData: FormData) {
@@ -28,6 +28,30 @@ export async function uploadDocument(formData: FormData) {
   if (file.type !== "application/pdf") {
     throw new Error("Only PDF files are allowed");
   }
+
+
+  
+  const userBusiness = await db
+    .select()
+    .from(business)
+    .where(eq(business.userId, session.user.id))
+    .limit(1);
+
+  if (userBusiness.length === 0) {
+    throw new Error("Business not found");
+  }
+
+  const currentBusiness = userBusiness[0];
+
+  const documentId = crypto.randomUUID();
+
+await db.insert(document).values({
+  id: documentId,
+  name: file.name,
+  fileType: file.type,
+  businessId: currentBusiness.id,
+});
+
 
   const { PDFLoader } =
     await import("@langchain/community/document_loaders/fs/pdf");
@@ -80,23 +104,13 @@ export async function uploadDocument(formData: FormData) {
   });
 
 
-  const userBusiness = await db
-    .select()
-    .from(business)
-    .where(eq(business.userId, session.user.id))
-    .limit(1);
-
-  if (userBusiness.length === 0) {
-    throw new Error("Business not found");
-  }
-
-  const currentBusiness = userBusiness[0];
 
 const records = chunks.map((chunk, index) => ({
   id: crypto.randomUUID(),
   values: result.embeddings[index],
   metadata: {
     businessId: currentBusiness.id,
+    documentId,
     text: chunk.pageContent,
   },
 }));
