@@ -38,17 +38,17 @@ import { signOut } from "@/lib/auth-client";
 
 const navigation = [
   { title: "Overview", href: "/dashboard", icon: LayoutDashboard },
+  { title: "Knowledge", href: "/dashboard/knowledge", icon: BookOpen },
+  { title: "Analytics", href: "/dashboard/analytics", icon: BarChart3 },
+  { title: "Settings", href: "/dashboard/settings", icon: Settings },
+];
+
+const secondaryNavigation = [
   {
     title: "Conversations",
     href: "/dashboard/conversations",
     icon: MessageSquare,
   },
-  { title: "Knowledge", href: "/dashboard/knowledge", icon: BookOpen },
-  { title: "Analytics", href: "/dashboard/analytics", icon: BarChart3 },
-];
-
-const secondaryNavigation = [
-  { title: "Settings", href: "/dashboard/settings", icon: Settings },
 ];
 
 

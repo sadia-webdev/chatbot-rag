@@ -58,7 +58,7 @@ export default function KnowledgePage() {
               />
             </div>
 
-            <Button type='submit' className='mt-6'>
+            <Button type='submit' className='mt-6 bg-accent hover:bg-accent/80'>
               <Upload className='mr-2 size-4' />
               Upload document
             </Button>

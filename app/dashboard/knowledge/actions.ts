@@ -4,6 +4,11 @@ import { embedMany } from "ai";
 import { embeddingModel } from "@/lib/embeddings";
 import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
+import { index } from "../../../lib/pinecone";
+import { eq } from "drizzle-orm";
+import { db } from "@/db/drizzle";
+import { business } from "@/db/schema";
+
 
 export async function uploadDocument(formData: FormData) {
   const session = await auth.api.getSession({
@@ -74,6 +79,34 @@ export async function uploadDocument(formData: FormData) {
     values: chunks.map((chunk) => chunk.pageContent),
   });
 
-  console.log("Embedding length:", result.embeddings.length);
-  console.log("First 10 numbers:", result.embeddings.slice(0, 10));
+
+  const userBusiness = await db
+    .select()
+    .from(business)
+    .where(eq(business.userId, session.user.id))
+    .limit(1);
+
+  if (userBusiness.length === 0) {
+    throw new Error("Business not found");
+  }
+
+  const currentBusiness = userBusiness[0];
+
+const records = chunks.map((chunk, index) => ({
+  id: crypto.randomUUID(),
+  values: result.embeddings[index],
+  metadata: {
+    businessId: currentBusiness.id,
+    text: chunk.pageContent,
+  },
+}));
+
+await index.upsert(records);
+
+console.log(`Uploaded ${records.length} vectors to Pinecone`);
+
+
+  const stats = await index.describeIndexStats();
+
+  console.log("Pinecone stats:", stats);
 }

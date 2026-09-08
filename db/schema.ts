@@ -73,9 +73,24 @@ export const business = pgTable("business", {
   phone: text("phone"),
   email: text("email"),
   userId: text("user_id")
-  .notNull()
+    .notNull()
     .unique()
     .references(() => user.id, { onDelete: "cascade" }),
+
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at")
+    .defaultNow()
+    .$onUpdate(() => new Date())
+    .notNull(),
+});
+
+export const document = pgTable("document", {
+  id: text("id").primaryKey(),
+  name: text("name").notNull(),
+  fileType: text("file_type").notNull(),
+  businessId: text("business_id")
+    .notNull()
+    .references(() => business.id, { onDelete: "cascade" }),
 
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at")
@@ -120,6 +135,7 @@ export const schema = {
   account,
   verification,
   business,
+  document,
   conversation,
   message,
 };
