@@ -38,18 +38,13 @@ import { signOut } from "@/lib/auth-client";
 
 const navigation = [
   { title: "Overview", href: "/dashboard", icon: LayoutDashboard },
-  { title: "New chat", href: "dashboard/chat", icon: MessageSquare },
+  { title: "New chat", href: "/dashboard/chat", icon: MessageSquare },
   { title: "Knowledge", href: "/dashboard/knowledge", icon: BookOpen },
   { title: "Analytics", href: "/dashboard/analytics", icon: BarChart3 },
   { title: "Settings", href: "/dashboard/settings", icon: Settings },
 ];
 
-const secondaryNavigation = [
-  {
-    title: "chats",
-    href: "/dashboard/chats",
-  },
-];
+
 
 
 type AppSidebarProps = {
@@ -109,19 +104,11 @@ export function AppSidebar({ user }: AppSidebarProps) {
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>
-              {secondaryNavigation.map((item) => (
-                <SidebarMenuItem key={item.href}>
-                  <SidebarMenuButton
-                    
-                    isActive={isActive(item.href)}
-                    tooltip={item.title}
-                  >
-                    <Link className='flex gap-2' href={item.href}>
-                      <span>{item.title}</span>
-                    </Link>
-                  </SidebarMenuButton>
+                <SidebarMenuItem >
+                    <div className='flex gap-2'>
+                      <span className="ml-2">Chats</span>
+                    </div>
                 </SidebarMenuItem>
-              ))}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
