@@ -40,39 +40,34 @@ export async function POST(request: Request) {
         .limit(1)
     : [];
 
-
-
   if (existingConversation.length === 0) {
+    const latestMessage = messages[messages.length - 1];
+
+    const textPart = latestMessage.parts.find((part) => part.type === "text");
+
+    if (!textPart || latestMessage.role !== "user") {
+      return new Response("Invalid user message", { status: 400 });
+    }
+
+    const title = textPart.text.slice(0, 50);
+
     await db.insert(conversation).values({
-    id: conversationId!,
-    title: "New conversation",
-    userId: session.user.id,
-  });
+      id: conversationId!,
+      title,
+      userId: session.user.id,
+    });
 
-
-  const latestMessage = messages[messages.length - 1];
-
-  const textPart = latestMessage.parts.find((part) => part.type === "text");
-
-  if (!textPart || latestMessage.role !== "user") {
-    return new Response("Invalid user message", { status: 400 });
-  }
-
-  await db.insert(message).values({
-    id: crypto.randomUUID(),
-    content: textPart.text,
-    role: latestMessage.role,
-    conversationId: conversationId!,
-    userId: session.user.id,
-  });
-
+    await db.insert(message).values({
+      id: crypto.randomUUID(),
+      content: textPart.text,
+      role: latestMessage.role,
+      conversationId: conversationId!,
+      userId: session.user.id,
+    });
   } else {
     // Existing conversation
     // reuse it
   }
-
-  
-
 
   const result = streamText({
     model: google("gemini-2.5-flash"),
@@ -81,13 +76,13 @@ export async function POST(request: Request) {
 
   const responseText = await result.text;
 
-await db.insert(message).values({
-  id: crypto.randomUUID(),
-  content: responseText,
-  role: "assistant",
-  conversationId: conversationId!,
-  userId: session.user.id,
-});
+  await db.insert(message).values({
+    id: crypto.randomUUID(),
+    content: responseText,
+    role: "assistant",
+    conversationId: conversationId!,
+    userId: session.user.id,
+  });
 
   return result.toUIMessageStreamResponse();
 }
