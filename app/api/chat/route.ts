@@ -1,5 +1,5 @@
 import { db } from "@/db/drizzle";
-import { conversation } from "@/db/schema";
+import { conversation, message } from "@/db/schema";
 import { auth } from "@/lib/auth";
 import { google } from "@ai-sdk/google";
 import { convertToModelMessages, streamText, UIMessage } from "ai";
@@ -48,16 +48,46 @@ export async function POST(request: Request) {
     title: "New conversation",
     userId: session.user.id,
   });
+
+
+  const latestMessage = messages[messages.length - 1];
+
+  const textPart = latestMessage.parts.find((part) => part.type === "text");
+
+  if (!textPart || latestMessage.role !== "user") {
+    return new Response("Invalid user message", { status: 400 });
+  }
+
+  await db.insert(message).values({
+    id: crypto.randomUUID(),
+    content: textPart.text,
+    role: latestMessage.role,
+    conversationId: conversationId!,
+    userId: session.user.id,
+  });
+
   } else {
     // Existing conversation
     // reuse it
-    console.log("Existing conversation")
   }
+
+  
+
 
   const result = streamText({
     model: google("gemini-2.5-flash"),
     messages: modelMessages,
   });
+
+  const responseText = await result.text;
+
+await db.insert(message).values({
+  id: crypto.randomUUID(),
+  content: responseText,
+  role: "assistant",
+  conversationId: conversationId!,
+  userId: session.user.id,
+});
 
   return result.toUIMessageStreamResponse();
 }

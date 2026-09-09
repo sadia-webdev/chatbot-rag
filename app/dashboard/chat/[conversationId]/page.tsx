@@ -40,7 +40,7 @@ const Page = ({ params }: PageProps) => {
                 className={`max-w-md rounded-lg px-6 py-1 ${
                   message.role === "user"
                     ? "bg-green-900 text-white"
-                    : "text-white"
+                    : "text-accent"
                 }`}
               >
                 {message.parts.map((part, i) => (
