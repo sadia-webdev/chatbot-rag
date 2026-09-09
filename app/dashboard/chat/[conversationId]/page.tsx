@@ -3,28 +3,30 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useChat } from "@ai-sdk/react";
-import { useState } from "react";
+import { useState, use } from "react";
 
 type PageProps = {
-  params: {
+  params: Promise<{
     conversationId: string;
-  };
+  }>;
 };
 
 const Page = ({ params }: PageProps) => {
+  const { conversationId } = use(params);
+
   const [input, setInput] = useState("");
 
   const { messages, sendMessage } = useChat({
     body: {
-      conversationId: params.conversationId,
+      conversationId,
     },
   });
 
   return (
-    <div className="flex min-h-screen p-12">
-      <div className="container mx-auto flex flex-col">
+    <div className='flex min-h-screen p-12'>
+      <div className='container mx-auto flex flex-col'>
         {/* messages */}
-        <div className="flex-1 overflow-y-auto">
+        <div className='flex-1 overflow-y-auto'>
           {messages.map((message, i) => (
             <div
               key={`${message.id}-${i}`}
@@ -56,22 +58,29 @@ const Page = ({ params }: PageProps) => {
 
             if (!input.trim()) return;
 
-            sendMessage({ text: input });
+            sendMessage(
+              { text: input },
+              {
+                body: {
+                  conversationId,
+                },
+              },
+            );
             setInput("");
           }}
-          className="flex items-end gap-2"
+          className='flex items-end gap-2'
         >
           <Input
-            className="py-6 text-white"
-            type="text"
-            placeholder="ask anything"
+            className='py-6 text-white'
+            type='text'
+            placeholder='ask anything'
             value={input}
             onChange={(e) => setInput(e.target.value)}
           />
 
           <Button
-            type="submit"
-            className="cursor-pointer bg-accent px-6 py-6 hover:bg-accent/80"
+            type='submit'
+            className='cursor-pointer bg-accent px-6 py-6 hover:bg-accent/80'
           >
             send
           </Button>

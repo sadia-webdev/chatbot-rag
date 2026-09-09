@@ -4,49 +4,60 @@ import { auth } from "@/lib/auth";
 import { google } from "@ai-sdk/google";
 import { convertToModelMessages, streamText, UIMessage } from "ai";
 import { headers } from "next/headers";
+import { eq, and } from "drizzle-orm";
 
-const maxDuration = 30
+const maxDuration = 30;
 
-export async function POST(request: Request){
-   const {
-     messages,
-     conversationId,
-   }: {
-     messages: UIMessage[];
-     conversationId?: string;
-   } = await request.json();
+export async function POST(request: Request) {
+  const {
+    messages,
+    conversationId,
+  }: {
+    messages: UIMessage[];
+    conversationId?: string;
+  } = await request.json();
 
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
 
+  if (!session?.user) {
+    return new Response("Unauthorized", { status: 401 });
+  }
 
-   const session = await auth.api.getSession({
-     headers: await headers(),
-   });
+  const modelMessages = await convertToModelMessages(messages);
 
-   if (!session?.user) {
-     return new Response("Unauthorized", { status: 401 });
-   }
-
-   const modelMessages = await convertToModelMessages(messages);
-
-
-   let currentConversationId = conversationId;
-
-   if (!currentConversationId) {
-
-     currentConversationId = crypto.randomUUID();
-
-     await db.insert(conversation).values({
-       id: currentConversationId,
-       title: "New conversation",
-       userId: session.user.id,
-     });
-   }
+  const existingConversation = conversationId
+    ? await db
+        .select()
+        .from(conversation)
+        .where(
+          and(
+            eq(conversation.id, conversationId),
+            eq(conversation.userId, session.user.id),
+          ),
+        )
+        .limit(1)
+    : [];
 
 
-    const result = await streamText({
-      model: google("gemini-2.5-flash"),
-      messages: await modelMessages
-    });
 
-    return result.toUIMessageStreamResponse()
+  if (existingConversation.length === 0) {
+    await db.insert(conversation).values({
+    id: conversationId!,
+    title: "New conversation",
+    userId: session.user.id,
+  });
+  } else {
+    // Existing conversation
+    // reuse it
+    console.log("Existing conversation")
+  }
+
+  const result = streamText({
+    model: google("gemini-2.5-flash"),
+    messages: modelMessages,
+  });
+
+  return result.toUIMessageStreamResponse();
 }
