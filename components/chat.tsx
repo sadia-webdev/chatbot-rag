@@ -26,10 +26,10 @@ export default function Chat({ conversationId, initialMessages }: ChatProps) {
   });
 
   return (
-    <div className='flex min-h-screen p-12'>
+    <div className='flex  min-h-screen p-12'>
       <div className='container mx-auto flex flex-col'>
         {/* messages */}
-        <div className='flex-1 overflow-y-auto'>
+        <div className='flex-1 mb-10  overflow-y-auto'>
           {messages.map((message, i) => (
             <div
               key={`${message.id}-${i}`}
@@ -55,8 +55,7 @@ export default function Chat({ conversationId, initialMessages }: ChatProps) {
         </div>
 
         {/* form */}
-        <form 
-        className="fixed bottom-0"
+        <form
           onSubmit={(e) => {
             e.preventDefault();
 
@@ -78,12 +77,11 @@ export default function Chat({ conversationId, initialMessages }: ChatProps) {
             }
 
             setInput("");
-
           }}
-          className='flex items-end gap-2'
+          className='flex items-end w-[60%] g mx-auto justify-center gap-2 fixed bottom-0 my-6'
         >
           <Input
-            className='py-6 text-white text-accent'
+            className='py-6 focus:border-0 rounded-full bg-white text-accent'
             type='text'
             placeholder='ask anything'
             value={input}

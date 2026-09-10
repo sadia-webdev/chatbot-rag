@@ -67,7 +67,7 @@ export function AppSidebar({ user, conversations }: AppSidebarProps) {
     href === "/dashboard" ? pathname === href : pathname.startsWith(href);
 
   return (
-    <Sidebar collapsible='icon'>
+    <Sidebar className="text-accent/60 " collapsible='icon'>
       <SidebarHeader>
         <div className='flex items-center justify-between px-2 py-1.5'>
           <Link href='/dashboard' className='flex items-center gap-2'>
@@ -93,7 +93,7 @@ export function AppSidebar({ user, conversations }: AppSidebarProps) {
                     tooltip={item.title}
                   >
                     <Link className='flex gap-2' href={item.href}>
-                      <item.icon />
+                      <item.icon className="text-accent/60" />
                       <span>{item.title}</span>
                     </Link>
                   </SidebarMenuButton>

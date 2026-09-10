@@ -5,10 +5,10 @@ import { redirect } from "next/navigation";
 import { AppSidebar } from "@/components/app-sidebar";
 import { SidebarToggle } from "@/components/sidebar-toggle";
 import { SidebarProvider } from "@/components/ui/sidebar";
+import { db } from "@/db/drizzle";
+import { conversation } from "@/db/schema";
 import { auth } from "@/lib/auth";
 import { desc, eq } from "drizzle-orm";
-import { conversation } from "@/db/schema";
-import { db } from "@/db/drizzle";
 
 export default async function DashboardLayout({
   children,

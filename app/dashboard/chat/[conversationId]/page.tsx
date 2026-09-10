@@ -1,11 +1,11 @@
+import { and, asc, eq } from "drizzle-orm";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
-import { and, asc, eq } from "drizzle-orm";
 
+import Chat from "@/components/chat";
 import { db } from "@/db/drizzle";
 import { conversation, message } from "@/db/schema";
 import { auth } from "@/lib/auth";
-import Chat from "@/components/chat";
 
 type PageProps = {
   params: Promise<{
