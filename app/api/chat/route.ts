@@ -48,39 +48,50 @@ export async function POST(request: Request) {
     return new Response("Invalid user message", { status: 400 });
   }
 
-  const existingConversation = conversationId
-    ? await db
-        .select()
-        .from(conversation)
-        .where(
-          and(
-            eq(conversation.id, conversationId),
-            eq(conversation.userId, session.user.id),
-          ),
-        )
-        .limit(1)
-    : [];
+  
+let currentConversation;
 
-  if (existingConversation.length === 0) {
+if (conversationId) {
+  const conversationResult = await db
+    .select()
+    .from(conversation)
+    .where(eq(conversation.id, conversationId))
+    .limit(1);
+
+  if (conversationResult.length > 0) {
+    currentConversation = conversationResult[0];
+
+    // Conversation exists, but belongs to another user
+    if (currentConversation.userId !== session.user.id) {
+      return new Response("Forbidden", { status: 403 });
+    }
+  } else {
+    // Conversation does not exist → create it
     const title = textPart.text.slice(0, 50);
 
-    await db.insert(conversation).values({
-      id: conversationId!,
-      title,
-      userId: session.user.id,
-    });
+    const newConversation = await db
+      .insert(conversation)
+      .values({
+        id: conversationId,
+        title,
+        userId: session.user.id,
+      })
+      .returning();
 
-    await db.insert(message).values({
-      id: crypto.randomUUID(),
-      content: textPart.text,
-      role: latestMessage.role,
-      conversationId: conversationId!,
-      userId: session.user.id,
-    });
-  } else {
-    // Existing conversation
-    // reuse it
+    currentConversation = newConversation[0];
   }
+}
+
+// Save the user's message
+await db.insert(message).values({
+  id: crypto.randomUUID(),
+  content: textPart.text,
+  role: latestMessage.role,
+  conversationId: currentConversation.id,
+  userId: session.user.id,
+});
+
+
 
   const results = await searchDocuments(textPart.text, currentBusiness.id);
 

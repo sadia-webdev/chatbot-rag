@@ -1,9 +1,11 @@
-"use client";
+import { headers } from "next/headers";
+import { redirect } from "next/navigation";
+import { and, asc, eq } from "drizzle-orm";
 
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { useChat } from "@ai-sdk/react";
-import { useState, use } from "react";
+import { db } from "@/db/drizzle";
+import { conversation, message } from "@/db/schema";
+import { auth } from "@/lib/auth";
+import Chat from "@/components/chat";
 
 type PageProps = {
   params: Promise<{
@@ -11,83 +13,50 @@ type PageProps = {
   }>;
 };
 
-const Page = ({ params }: PageProps) => {
-  const { conversationId } = use(params);
+export default async function Page({ params }: PageProps) {
+  const { conversationId } = await params;
 
-  const [input, setInput] = useState("");
-
-  const { messages, sendMessage } = useChat({
-    body: {
-      conversationId,
-    },
+  const session = await auth.api.getSession({
+    headers: await headers(),
   });
 
+  if (!session?.user) {
+    redirect("/sign-in");
+  }
+
+  const conversationResult = await db
+    .select()
+    .from(conversation)
+    .where(
+      and(
+        eq(conversation.id, conversationId),
+        eq(conversation.userId, session.user.id),
+      ),
+    )
+    .limit(1);
+
+  let initialMessages = [];
+
+  if (conversationResult.length > 0) {
+    const dbMessages = await db
+      .select()
+      .from(message)
+      .where(eq(message.conversationId, conversationId))
+      .orderBy(asc(message.createdAt));
+
+    initialMessages = dbMessages.map((msg) => ({
+      id: msg.id,
+      role: msg.role as "user" | "assistant",
+      parts: [
+        {
+          type: "text" as const,
+          text: msg.content,
+        },
+      ],
+    }));
+  }
+
   return (
-    <div className='flex min-h-screen p-12'>
-      <div className='container mx-auto flex flex-col'>
-        {/* messages */}
-        <div className='flex-1 overflow-y-auto'>
-          {messages.map((message, i) => (
-            <div
-              key={`${message.id}-${i}`}
-              className={
-                message.role === "user"
-                  ? "flex justify-end"
-                  : "flex justify-start"
-              }
-            >
-              <div
-                className={`max-w-md rounded-lg px-6 py-1 ${
-                  message.role === "user"
-                    ? "bg-green-900 text-white"
-                    : "text-accent"
-                }`}
-              >
-                {message.parts.map((part, i) => (
-                  <div key={i}>{part.text}</div>
-                ))}
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* form */}
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-
-            if (!input.trim()) return;
-
-            sendMessage(
-              { text: input },
-              {
-                body: {
-                  conversationId,
-                },
-              },
-            );
-            setInput("");
-          }}
-          className='flex items-end gap-2'
-        >
-          <Input
-            className='py-6 text-white'
-            type='text'
-            placeholder='ask anything'
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-          />
-
-          <Button
-            type='submit'
-            className='cursor-pointer bg-accent px-6 py-6 hover:bg-accent/80'
-          >
-            send
-          </Button>
-        </form>
-      </div>
-    </div>
+    <Chat conversationId={conversationId} initialMessages={initialMessages} />
   );
-};
-
-export default Page;
+}

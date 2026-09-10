@@ -44,19 +44,23 @@ const navigation = [
   { title: "Settings", href: "/dashboard/settings", icon: Settings },
 ];
 
-
-
-
 type AppSidebarProps = {
   user: {
     name: string;
     email: string;
     image?: string | null;
   };
+
+  conversations: {
+    id: string;
+    title: string;
+    userId: string;
+    createdAt: Date;
+    updatedAt: Date;
+  }[];
 };
 
-
-export function AppSidebar({ user }: AppSidebarProps) {
+export function AppSidebar({ user, conversations }: AppSidebarProps) {
   const pathname = usePathname();
 
   const isActive = (href: string) =>
@@ -102,18 +106,23 @@ export function AppSidebar({ user }: AppSidebarProps) {
         <SidebarSeparator />
 
         <SidebarGroup>
+          <SidebarGroupLabel>Chats</SidebarGroupLabel>
+
           <SidebarGroupContent>
             <SidebarMenu>
-              <SidebarMenuItem>
-                <div className='flex gap-2'>
-                  <span className='ml-2'>Chats</span>
-                  {/* <ul className="flex flex-col gap-2 ">
-                        {conversations.map(conversation => (
-                        <li className="text-gray-200" key={conversation.id}>{conversation.title}</li>
-                        ))}
-                      </ul> */}
-                </div>
-              </SidebarMenuItem>
+              {conversations.map((chat) => (
+                <SidebarMenuItem key={chat.id}>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={pathname === `/dashboard/chat/${chat.id}`}
+                    tooltip={chat.title}
+                  >
+                    <Link href={`/dashboard/chat/${chat.id}`}>
+                      <span className='truncate'>{chat.title}</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>

@@ -6,7 +6,7 @@ import { AppSidebar } from "@/components/app-sidebar";
 import { SidebarToggle } from "@/components/sidebar-toggle";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { auth } from "@/lib/auth";
-import { eq } from "drizzle-orm";
+import { desc, eq } from "drizzle-orm";
 import { conversation } from "@/db/schema";
 import { db } from "@/db/drizzle";
 
@@ -24,10 +24,16 @@ export default async function DashboardLayout({
   }
 
 
+  const conversations = await db
+    .select()
+    .from(conversation)
+    .where(eq(conversation.userId, session.user.id))
+    .orderBy(desc(conversation.updatedAt));
+
 
   return (
     <SidebarProvider>
-      <AppSidebar user={session.user}/>
+      <AppSidebar user={session.user} conversations={conversations} />
 
       <main className='flex flex-1 flex-col text-gray-800 bg-white'>
         <SidebarToggle />
