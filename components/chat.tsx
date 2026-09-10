@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useChat } from "@ai-sdk/react";
 import { UIMessage } from "ai";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 type ChatProps = {
@@ -13,6 +14,9 @@ type ChatProps = {
 
 export default function Chat({ conversationId, initialMessages }: ChatProps) {
   const [input, setInput] = useState("");
+
+  const router = useRouter();
+  const [isNewChat] = useState(initialMessages.length === 0);
 
   const { messages, sendMessage } = useChat({
     messages: initialMessages,
@@ -38,7 +42,7 @@ export default function Chat({ conversationId, initialMessages }: ChatProps) {
               <div
                 className={`max-w-md rounded-lg px-6 py-1 ${
                   message.role === "user"
-                    ? "bg-green-900 text-white"
+                    ? "bg-accent text-white"
                     : "text-accent"
                 }`}
               >
@@ -51,7 +55,8 @@ export default function Chat({ conversationId, initialMessages }: ChatProps) {
         </div>
 
         {/* form */}
-        <form
+        <form 
+        className="fixed bottom-0"
           onSubmit={(e) => {
             e.preventDefault();
 
@@ -66,12 +71,19 @@ export default function Chat({ conversationId, initialMessages }: ChatProps) {
               },
             );
 
+            if (isNewChat) {
+              setTimeout(() => {
+                router.refresh();
+              }, 500);
+            }
+
             setInput("");
+
           }}
           className='flex items-end gap-2'
         >
           <Input
-            className='py-6 text-transparent text-accent'
+            className='py-6 text-white text-accent'
             type='text'
             placeholder='ask anything'
             value={input}
