@@ -55,6 +55,7 @@ type AppSidebarProps = {
   };
 };
 
+
 export function AppSidebar({ user }: AppSidebarProps) {
   const pathname = usePathname();
 
@@ -84,7 +85,6 @@ export function AppSidebar({ user }: AppSidebarProps) {
               {navigation.map((item) => (
                 <SidebarMenuItem key={item.href}>
                   <SidebarMenuButton
-                    
                     isActive={isActive(item.href)}
                     tooltip={item.title}
                   >
@@ -104,11 +104,16 @@ export function AppSidebar({ user }: AppSidebarProps) {
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>
-                <SidebarMenuItem >
-                    <div className='flex gap-2'>
-                      <span className="ml-2">Chats</span>
-                    </div>
-                </SidebarMenuItem>
+              <SidebarMenuItem>
+                <div className='flex gap-2'>
+                  <span className='ml-2'>Chats</span>
+                  {/* <ul className="flex flex-col gap-2 ">
+                        {conversations.map(conversation => (
+                        <li className="text-gray-200" key={conversation.id}>{conversation.title}</li>
+                        ))}
+                      </ul> */}
+                </div>
+              </SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
@@ -118,7 +123,7 @@ export function AppSidebar({ user }: AppSidebarProps) {
         <SidebarMenu>
           <SidebarMenuItem>
             <DropdownMenu>
-              <DropdownMenuTrigger >
+              <DropdownMenuTrigger>
                 <SidebarMenuButton
                   size='lg'
                   className='data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground'
