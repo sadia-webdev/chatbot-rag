@@ -1,11 +1,11 @@
 import { db } from "@/db/drizzle";
 import { business, conversation, message } from "@/db/schema";
 import { auth } from "@/lib/auth";
+import { searchDocuments } from "@/lib/search";
 import { google } from "@ai-sdk/google";
 import { convertToModelMessages, streamText, UIMessage } from "ai";
+import { eq } from "drizzle-orm";
 import { headers } from "next/headers";
-import { eq, and } from "drizzle-orm";
-import { searchDocuments } from "@/lib/search";
 
 const maxDuration = 30;
 

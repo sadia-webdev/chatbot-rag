@@ -16,7 +16,7 @@ export default function NotFound() {
             Page not found
           </h1>
           <p className='text-slate-400 text-sm leading-relaxed'>
-            Sorry, the page you are looking for doesn't exist, was removed, or
+            Sorry, the page you are looking for does not exist, was removed, or
             is temporarily unavailable.
           </p>
         </div>

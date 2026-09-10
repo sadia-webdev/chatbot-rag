@@ -70,7 +70,7 @@ export default function SignUpPage() {
 
             <p className='mt-8 max-w-md text-lg leading-7 text-neutral-400'>
               Give your customers instant answers about your products, services,
-              prices, and business — even when you're away.
+              prices, and business — even when you are away.
             </p>
           </div>
         </section>

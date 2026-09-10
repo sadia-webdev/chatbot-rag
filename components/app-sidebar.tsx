@@ -1,18 +1,23 @@
 "use client";
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
 import {
   BarChart3,
-  Building2,
+  BookOpen,
   ChevronsUpDown,
   LayoutDashboard,
   LogOut,
   MessageSquare,
-  Settings,
-  BookOpen,
+  Settings
 } from "lucide-react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import {
   Sidebar,
   SidebarContent,
@@ -28,12 +33,6 @@ import {
   SidebarSeparator,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { signOut } from "@/lib/auth-client";
 
 const navigation = [

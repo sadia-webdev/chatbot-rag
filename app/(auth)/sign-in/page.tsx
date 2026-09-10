@@ -68,7 +68,7 @@ export default function SignInPage() {
 
             <p className='mt-8 max-w-md text-lg leading-7 text-neutral-400'>
               Give your customers instant answers about your products, services,
-              prices, and business — even when you're away.
+              prices, and business — even when you are away.
             </p>
           </div>
         </section>
@@ -208,7 +208,7 @@ export default function SignInPage() {
             </form>
 
             <p className='mt-8 text-center text-sm text-neutral-500'>
-              doesn't have an account?{" "}
+              does not have an account?{" "}
               <Link
                 href='/sign-up'
                 className='font-medium text-accent underline underline-offset-4 hover:text-accent/80'
