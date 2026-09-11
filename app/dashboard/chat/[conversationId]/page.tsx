@@ -6,6 +6,7 @@ import Chat from "@/components/chat";
 import { db } from "@/db/drizzle";
 import { conversation, message } from "@/db/schema";
 import { auth } from "@/lib/auth";
+import { UIMessage } from "ai";
 
 type PageProps = {
   params: Promise<{
@@ -35,7 +36,7 @@ export default async function Page({ params }: PageProps) {
     )
     .limit(1);
 
-  let initialMessages = [];
+let initialMessages: UIMessage[] = [];
 
   if (conversationResult.length > 0) {
     const dbMessages = await db

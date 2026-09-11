@@ -76,9 +76,11 @@ await db.insert(document).values({
     }
   });
 
-  if (!fullText.trim()) {
-    return `No text content could be extracted from ${file.name}. The PDF might be image-based or encrypted.`;
-  }
+ if (!fullText.trim()) {
+   throw new Error(
+     `No text content could be extracted from ${file.name}. The PDF might be image-based or encrypted.`,
+   );
+ }
 
   const { RecursiveCharacterTextSplitter } =
     await import("@langchain/textsplitters");
@@ -117,10 +119,7 @@ const records = chunks.map((chunk, index) => ({
 
 await index.upsert(records);
 
-console.log(`Uploaded ${records.length} vectors to Pinecone`);
 
 
-  const stats = await index.describeIndexStats();
 
-  console.log("Pinecone stats:", stats);
 }

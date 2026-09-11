@@ -81,7 +81,11 @@ export async function POST(request: Request) {
     }
   }
 
-  // Save the user's message
+  if (!currentConversation) {
+  return new Response("Conversation not found", { status: 404 });
+}
+
+    // Save the user's message
   await db.insert(message).values({
     id: crypto.randomUUID(),
     content: textPart.text,

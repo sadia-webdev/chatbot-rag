@@ -7,10 +7,10 @@ import {
   LayoutDashboard,
   LogOut,
   MessageSquare,
-  Settings
+  Settings,
 } from "lucide-react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 import {
   DropdownMenu,
@@ -62,11 +62,13 @@ type AppSidebarProps = {
 export function AppSidebar({ user, conversations }: AppSidebarProps) {
   const pathname = usePathname();
 
+  const router = useRouter();
+
   const isActive = (href: string) =>
     href === "/dashboard" ? pathname === href : pathname.startsWith(href);
 
   return (
-    <Sidebar className="text-accent/60 " collapsible='icon'>
+    <Sidebar className='text-accent/60 ' collapsible='icon'>
       <SidebarHeader>
         <div className='flex items-center justify-between px-2 py-1.5'>
           <Link href='/dashboard' className='flex items-center gap-2'>
@@ -92,7 +94,7 @@ export function AppSidebar({ user, conversations }: AppSidebarProps) {
                     tooltip={item.title}
                   >
                     <Link className='flex gap-2' href={item.href}>
-                      <item.icon className="text-accent/60" />
+                      <item.icon className='text-accent/60' />
                       <span>{item.title}</span>
                     </Link>
                   </SidebarMenuButton>
@@ -106,19 +108,16 @@ export function AppSidebar({ user, conversations }: AppSidebarProps) {
 
         <SidebarGroup>
           <SidebarGroupLabel>Chats</SidebarGroupLabel>
-
           <SidebarGroupContent>
             <SidebarMenu>
               {conversations.map((chat) => (
                 <SidebarMenuItem key={chat.id}>
                   <SidebarMenuButton
-                    asChild
                     isActive={pathname === `/dashboard/chat/${chat.id}`}
                     tooltip={chat.title}
+                    onClick={() => router.push(`/dashboard/chat/${chat.id}`)}
                   >
-                    <Link href={`/dashboard/chat/${chat.id}`}>
-                      <span className='truncate'>{chat.title}</span>
-                    </Link>
+                    <span className='truncate text-gray-700'>{chat.title}</span>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}

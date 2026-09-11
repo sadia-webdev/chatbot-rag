@@ -18,12 +18,9 @@ export default function Chat({ conversationId, initialMessages }: ChatProps) {
   const router = useRouter();
   const [isNewChat] = useState(initialMessages.length === 0);
 
-  const { messages, sendMessage } = useChat({
-    messages: initialMessages,
-    body: {
-      conversationId,
-    },
-  });
+ const { messages, sendMessage } = useChat({
+  messages: initialMessages,
+});
 
   return (
     <div className='flex  min-h-screen p-12'>
